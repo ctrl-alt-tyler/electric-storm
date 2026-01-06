@@ -1,0 +1,29 @@
+project:
+  mode: "user" 
+  root: "/"
+
+security:
+  ask_for_permission: false
+  scrub_secrets: true
+
+providers:
+  default_provider: "google"
+  google: { enabled: true, env_key: "GEMINI_API_KEY" }
+  anthropic: { enabled: true, env_key: "ANTHROPIC_API_KEY" }
+  custom:
+    ollama:
+      enabled: false
+      base_url: "http://localhost:11434/v1"
+      api_key: "ollama"
+      discovery: true
+
+agents:
+  scout: { binary: "python3 agents/scout.py", description: "Read-only file search." }
+  worker: { binary: "python3 agents/worker.py", description: "Write code and edit files." }
+  sysadmin: { binary: "python3 agents/sysadmin.py", description: "Manage system packages." }
+  hypervisor: { binary: "python3 agents/proxmox.py", description: "Manage VMs." }
+
+roles:
+  manager: { required: ["balance"], fallback: "google" }
+  engineer: { required: ["reasoning"], fallback: "anthropic" }
+  scout: { required: ["speed"], fallback: "custom" }
